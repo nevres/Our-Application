@@ -74,6 +74,7 @@ public class MainActivity extends ActionBarActivity implements LocationListener 
         //testing github and again
         //this is line added from branch nevres
         //commit branch nevres second
+        //commit third nevres branch
         String hello;
 
         setContentView(R.layout.activity_main);
