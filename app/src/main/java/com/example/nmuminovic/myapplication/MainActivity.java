@@ -71,6 +71,9 @@ public class MainActivity extends ActionBarActivity implements LocationListener 
             finish();
         }
 
+        //testing github
+        String hello;
+
         setContentView(R.layout.activity_main);
 
         test = (TextView)findViewById(R.id.tvTest);
