@@ -12,7 +12,7 @@
         android:layout_above="@+id/latlongLocation" />
 
     <Button
-        android:id="@+id/latlongLocation"
+        android:id="@+id/callTaxi"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
