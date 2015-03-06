@@ -156,39 +156,30 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
             return false;
         }
     }
-        public void printJSON(String coordinates){
-            JSONArray jsonArray = null;
-            try{
-                jsonArray = new JSONArray(coordinates);
+        public void printJSON(String coordinates) throws JSONException{
+            JSONArray jsonArray = new JSONArray(coordinates);
 
-                for (int i=0; i < jsonArray.length(); i++)
-                {
-                    try {
-                        JSONObject oneObject = jsonArray.getJSONObject(i);
+            if(jsonArray.length()>1){
 
-                        LatLng latLng = new LatLng(Double.valueOf(oneObject.getString("latitude")), Double.valueOf(oneObject.getString("longitude")));
-                        Marker marker = googleMap.addMarker(new MarkerOptions()
-                                        .position(latLng)
-                                        .title(oneObject.getString("driver"))
-                                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.taxi))
-                        );
-                        //marker.remove();
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    JSONObject oneObject = jsonArray.getJSONObject(i);
 
-                    } catch (JSONException e) {
-                    }
+                    LatLng latLng = new LatLng(Double.valueOf(oneObject.getString("latitude")), Double.valueOf(oneObject.getString("longitude")));
+                    Marker marker = googleMap.addMarker(new MarkerOptions()
+                                    .position(latLng)
+                                    .title(oneObject.getString("driver"))
+                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.taxi))
+                    );
                 }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            if(jsonArray.length() == 1)
-                try {
+            }else if(jsonArray.length() == 1){
                     LatLng latLng = new LatLng(Double.valueOf(jsonArray.getJSONObject(0).getString("latitude")), Double.valueOf(jsonArray.getJSONObject(0).getString("longitude")));
                     googleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
                     googleMap.animateCamera(CameraUpdateFactory.zoomTo(13));
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                    Marker marker = googleMap.addMarker(new MarkerOptions()
+                            .position(latLng)
+                            .title(jsonArray.getJSONObject(0).getString("driver"))
+                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.taxi_comming)));
                 }
-
         }
 
     @Override
@@ -203,14 +194,14 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
 
         }*/
         if(v.getId()== R.id.callTaxi){
-            if(callTaxi.getText() == "POZOVI TAXI") {
+            if(callTaxi.getText().equals("POZOVI TAXI")) {
 
                 asyncTask.cancel(true);
                 getNearest = new GetNearest();
                 getNearest.execute();
                 callTaxi.setText("OTKAZI TAXI");
 
-            }else if(callTaxi.getText()=="OTKAZI TAXI"){
+            }else if(callTaxi.getText().equals("OTKAZI TAXI")){
                 getNearest.cancel(true);
                 asyncTask = new MyAsyncTask();
                 asyncTask.execute();
@@ -236,8 +227,11 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
 
         protected void onPostExecute(Double result){
             googleMap.clear();
-            MainActivity.this.printJSON(neares_coordinates);
-            Log.d("GN.onpost","GN.onpost");
+            try {
+                MainActivity.this.printJSON(neares_coordinates);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
 
         private void getNearestTaxi(){
@@ -246,7 +240,7 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
             BufferedReader in;
 
             try {
-                List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
+                List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(3);
                 nameValuePairs.add(new BasicNameValuePair("lat", "43"));
                 nameValuePairs.add(new BasicNameValuePair("lng", "18"));
                 nameValuePairs.add(new BasicNameValuePair("radius","100"));
@@ -288,7 +282,11 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
 
         protected void onPostExecute(Double result){
             googleMap.clear();
-            MainActivity.this.printJSON(coordinates_json);
+            try {
+                MainActivity.this.printJSON(coordinates_json);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
 
         protected void onProgressUpdate(Integer... progress){
